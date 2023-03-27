@@ -1,0 +1,9 @@
+.idea
+.DS_Store
+__pycache__
+scrapper/browser/chromedriver
+venv
+setenv.sh
+index.html
+*.log
+*.json
