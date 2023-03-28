@@ -29,7 +29,7 @@ from time import sleep
 from bs4 import BeautifulSoup
 
 from logger import init_logger, LOGGER_LEVEL
-from utilites import get_value_from_json, write_json_to_file
+from utilites import get_value_from_json, write_to_json_file
 from .base_scrapper import BaseScrapper, RequestsMixin
 from .data_classes import Project, Flat, Price
 
@@ -118,7 +118,7 @@ class PIKScrapper(BaseScrapper, RequestsMixin):
         flats_info = json.loads(self.requests_get(url=url_project_flats + str(flat_page)))
 
         # if SCRAPPER_DEBUG:
-        #     write_json_to_file(f'temp/raw_flats_info_{datetime.now()}', flats_info)
+        #     write_to_json_file(f'temp/raw_flats_info_{datetime.now()}', flats_info)
         # flats_info = read_json_from_file('flats_info.json')
 
         total_flats = flats_info.get('count', 0)
@@ -138,17 +138,16 @@ class PIKScrapper(BaseScrapper, RequestsMixin):
         flats_on_this_page = get_value_from_json(flats_info, ['blocks', 0, "flats"])
         self.__get_flats_from_page(data, project.project_id, flats_on_this_page)
 
-        for flat_page in range(2, total_pages + 1):
-            logger.debug(f"[{flat_page}/{total_pages}]")
-            flats_info = json.loads(self.requests_get(url=url_project_flats + str(flat_page)))
-            # if SCRAPPER_DEBUG:
-            #     write_json_to_file(f'temp/raw_flats_info_{datetime.now()}', flats_info)
-            flats_on_this_page = get_value_from_json(flats_info, ['blocks', 0, "flats"])
-            self.__get_flats_from_page(data, project.project_id, flats_on_this_page)
+        if not SCRAPPER_DEBUG:
+            for flat_page in range(2, total_pages + 1):
+                logger.debug(f"[{flat_page}/{total_pages}]")
+                flats_info = json.loads(self.requests_get(url=url_project_flats + str(flat_page)))
+                # if SCRAPPER_DEBUG:
+                #     write_to_json_file(f'temp/raw_flats_info_{datetime.now()}', flats_info)
+                flats_on_this_page = get_value_from_json(flats_info, ['blocks', 0, "flats"])
+                self.__get_flats_from_page(data, project.project_id, flats_on_this_page)
 
-            sleep(randint(1, 3))
-            if SCRAPPER_DEBUG:
-                break
+                sleep(randint(1, 3))
 
         logger.debug(f"Собрана информация по {len(self.__flats)} квартирам.")
 
