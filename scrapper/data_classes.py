@@ -38,7 +38,7 @@ class Flat:                     # Информация о квартире
 
 @dataclass
 class Price:                    # Информация о цене
-    price_id: int               # id квартиры, которой принадлежит данная цена
+    flat_id: int                # id квартиры, которой принадлежит данная цена
     benefit_name: str           # Название ценового предложения
     benefit_description: str    # Описание ценового предложения
     price: int                  # Цена

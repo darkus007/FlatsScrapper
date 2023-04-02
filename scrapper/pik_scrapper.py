@@ -29,7 +29,7 @@ from time import sleep
 from bs4 import BeautifulSoup
 
 from logger import init_logger, LOGGER_LEVEL
-from utilites import get_value_from_json, write_to_json_file
+from utilites import get_value_from_json
 from .base_scrapper import BaseScrapper, RequestsMixin
 from .data_classes import Project, Flat, Price
 
@@ -117,10 +117,6 @@ class PIKScrapper(BaseScrapper, RequestsMixin):
 
         flats_info = json.loads(self.requests_get(url=url_project_flats + str(flat_page)))
 
-        # if SCRAPPER_DEBUG:
-        #     write_to_json_file(f'temp/raw_flats_info_{datetime.now()}', flats_info)
-        # flats_info = read_json_from_file('flats_info.json')
-
         total_flats = flats_info.get('count', 0)
         total_pages = total_flats // 50
         if total_flats % 50 != 0:
@@ -142,8 +138,6 @@ class PIKScrapper(BaseScrapper, RequestsMixin):
             for flat_page in range(2, total_pages + 1):
                 logger.debug(f"[{flat_page}/{total_pages}]")
                 flats_info = json.loads(self.requests_get(url=url_project_flats + str(flat_page)))
-                # if SCRAPPER_DEBUG:
-                #     write_to_json_file(f'temp/raw_flats_info_{datetime.now()}', flats_info)
                 flats_on_this_page = get_value_from_json(flats_info, ['blocks', 0, "flats"])
                 self.__get_flats_from_page(data, project.project_id, flats_on_this_page)
 
@@ -174,7 +168,7 @@ class PIKScrapper(BaseScrapper, RequestsMixin):
                 data_created=data
             )
             result_price = Price(
-                price_id=result_flat.flat_id,
+                flat_id=result_flat.flat_id,
                 benefit_name=get_value_from_json(flat, ['mainBenefit', "name"]),
                 benefit_description=get_value_from_json(flat, ['mainBenefit', "description"]),
                 price=get_value_from_json(flat, ["price"]),
@@ -194,23 +188,20 @@ class PIKScrapper(BaseScrapper, RequestsMixin):
 
         html_text = self.requests_get(HOST)
 
-        # with open("index.html", 'r') as file:
-        #     html_text = file.read()
-
         if html_text:
             self.__get_projects(html_text, current_data)
             self.__get_flats_from_all_projects(current_data, self.__projects)
         else:
             logger.error(f"Не удалось получить главную страницу {HOST}!")
 
-    def get_projects(self):
+    def get_projects(self) -> list[Project]:
         """ Возвращает результат сбора информации по проектам. """
         return self.__projects
 
-    def get_flats(self):
+    def get_flats(self) -> list[Flat]:
         """ Возвращает результат сбора информации по квартирам. """
         return self.__flats
 
-    def get_prices(self):
+    def get_prices(self) -> list[Price]:
         """ Возвращает результат сбора информации по ценам. """
         return self.__prices
