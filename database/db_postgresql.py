@@ -71,17 +71,17 @@ def insert_price(table: str, data: Dict) -> None:
     :return: None.
     """
     cursor = connect.cursor()
-    query_get = f"SELECT prices.flat_id, prices.price, prices.booking_status " \
-                f"FROM prices " \
+    query_get = f"SELECT price.flat_id, price.price, price.booking_status " \
+                f"FROM price " \
                 f"INNER JOIN (" \
                 f"SELECT flat_id, max(data_created) AS max_data " \
-                f"FROM prices " \
-                f"GROUP BY flat_id) AS last_price ON last_price.flat_id = prices.flat_id " \
-                f"WHERE prices.data_created = last_price.max_data AND prices.flat_id = {data['flat_id']};"
+                f"FROM price " \
+                f"GROUP BY flat_id) AS last_price ON last_price.flat_id = price.flat_id " \
+                f"WHERE price.data_created = last_price.max_data AND price.flat_id = {data['flat_id']};"
     cursor.execute(query_get)
     last_exist = cursor.fetchone()
 
-    if not (last_exist[1] == data['price'] and last_exist[2] == data['booking_status']):
+    if not (last_exist and (last_exist[1] == 22885247 and last_exist[2] == 'active')):
         columns = ', '.join(data.keys())
         values = tuple(data.values())
         query = str(f"INSERT INTO {table} ({columns}) VALUES {values};")

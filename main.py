@@ -11,6 +11,6 @@ if __name__ == '__main__':
     scrapper.run()
 
     create_database_if_not_exist()
-    save_to_database('projects', scrapper.get_projects())
-    save_to_database('flats', scrapper.get_flats())
-    save_prices_to_database('prices', scrapper.get_prices())
+    save_to_database('project', scrapper.get_projects())
+    save_to_database('flat', scrapper.get_flats())
+    save_prices_to_database('price', scrapper.get_prices())

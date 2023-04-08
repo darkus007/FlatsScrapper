@@ -1,13 +1,14 @@
 CREATE VIEW all_flats_last_price AS
-    SELECT flats.flat_id, flats.address, flats.floor, flats.rooms, flats.area, flats.finishing, flats.settlement_date, flats.url_suffix,
-        projects.project_id, projects.name, projects.city, projects.url,
-        prices.price, prices.booking_status
-    FROM flats
-    INNER JOIN projects ON flats.project_id = projects.project_id
-    INNER JOIN prices ON prices.flat_id = flats.flat_id
+    SELECT flat.flat_id, flat.address, flat.floor, flat.rooms, flat.area, flat.finishing,
+    flat.settlement_date, flat.url_suffix,
+        project.project_id, project.name, project.city, project.url,
+        price.price, price.booking_status
+    FROM flat
+    INNER JOIN project ON flat.project_id = project.project_id
+    INNER JOIN price ON price.flat_id = flat.flat_id
     INNER JOIN (
         SELECT flat_id, max(data_created) AS max_data
-        FROM prices
+        FROM price
         GROUP BY flat_id
-    ) AS last_price ON last_price.flat_id = prices.flat_id
-    WHERE prices.data_created = last_price.max_data;
+    ) AS last_price ON last_price.flat_id = price.flat_id
+    WHERE price.data_created = last_price.max_data;
