@@ -29,7 +29,7 @@ def save_to_database(table_name: str, data_to_save: list[Project | Flat | Price]
         insert(table_name, dataclasses.asdict(data))
 
 
-def save_prices_to_database(table_name: str, data_to_save: list[Project | Flat | Price]) -> None:
+def save_prices_to_database(table_name: str, data_to_save: list[Project]) -> None:
     """
     Сохраняет цены в базу данных.
     Уникальность записей обеспечивается проверкой уже записанных данных.

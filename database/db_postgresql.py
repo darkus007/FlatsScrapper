@@ -81,7 +81,7 @@ def insert_price(table: str, data: Dict) -> None:
     cursor.execute(query_get)
     last_exist = cursor.fetchone()
 
-    if not (last_exist and (last_exist[1] == 22885247 and last_exist[2] == 'active')):
+    if not (bool(last_exist) and (last_exist[1] == data['price'] and last_exist[2] == data['booking_status'])):
         columns = ', '.join(data.keys())
         values = tuple(data.values())
         query = str(f"INSERT INTO {table} ({columns}) VALUES {values};")

@@ -38,7 +38,7 @@ logger = init_logger(__name__, LOGGER_LEVEL)
 HOST = "https://www.pik.ru/projects"  # страница с проектами
 PROJECT_URL_PREFIX = "https://www.pik.ru/"  # для формирования url-адреса проекта
 
-SCRAPPER_DEBUG = True  # если True, то собирает данные НЕ полностью для экономии времени при отладке
+SCRAPPER_DEBUG = False  # если True, то собирает данные НЕ полностью для экономии времени при отладке
 
 
 class PIKScrapper(BaseScrapper, RequestsMixin):
